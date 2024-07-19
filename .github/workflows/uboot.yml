@@ -43,6 +43,9 @@ jobs:
         df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH Uboot
         ln -sf /Uboot $GITHUB_WORKSPACE/Uboot
+        chmod +x $DIY_P1_SH
+        cd Uboot
+        $GITHUB_WORKSPACE/$DIY_P1_SH
 
     - name: Generate release tag
       id: tag
