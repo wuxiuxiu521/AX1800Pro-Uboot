@@ -46,6 +46,7 @@ jobs:
       
       run: |
         cd /opt/uboot
+        chmod +x ./env.sh
         chmod +x ./build.sh
         sudo ./build.sh
         
