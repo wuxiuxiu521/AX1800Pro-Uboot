@@ -8,7 +8,6 @@ on:
     types: started
 
 env:
-  REPO_URL: https://github.com/jifei881121/AX1800Pro-Uboot
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -39,8 +38,7 @@ jobs:
     - name: Clone source code
       working-directory: /Uboot
       run: |
-        df -hT $PWD
-        git clone $REPO_URL -b Uboot
+        git clone https://github.com/jifei881121/AX1800Pro-Uboot -b Uboot
         ln -sf /Uboot $GITHUB_WORKSPACE/Uboot
         cd /Uboot
         chmod +x build.sh
