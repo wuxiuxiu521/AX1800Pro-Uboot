@@ -68,7 +68,7 @@ jobs:
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        files: ${{ env.FIRMWARE }}/opt/uboot/*.mbn
+        files: ${{ env.FIRMWARE }}/opt/uboot/*
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
