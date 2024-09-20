@@ -36,14 +36,14 @@ jobs:
         ./build.sh
 
     - name: 打包固件
-      # uses: actions/upload-artifact@main
-      # with:
-        # name: AX1800Pro-Uboot
-        # path: ./u-boot.*
-      run: |
-        echo "构建结束"
-        echo "查看当前目录内容"
-        # ls -al
-        # tree
-        find -name u-boot.bin
-        echo "查看构建目录内容"
+      uses: actions/upload-artifact@main
+      with:
+        name: AX1800Pro-Uboot
+        path: uboot/u-boot.bin, u-boot.mbn
+      # run: |
+      #   echo "构建结束"
+      #   echo "查看当前目录内容"
+      #   # ls -al
+      #   # tree
+      #   find -name u-boot.bin
+      #   echo "查看构建目录内容"
