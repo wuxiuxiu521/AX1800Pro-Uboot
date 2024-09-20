@@ -1,40 +1,66 @@
-name: U-Boot Build
+#=================================================
+# Description: Build OpenWrt using GitHub Actions
+# Lisence: MIT
+#=================================================
 
-on:
-#   schedule:
-#     - cron: 0 20 * * 0
+name: 编译 AX1800Pro_UBoot
+
+# 以下开关，触发工作流
+on: 
+  repository_dispatch:
   workflow_dispatch:
-
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  WRT_REPO: https://github.com/wuxiuxiu521/AX1800Pro-Uboot
-  WRT_BRANCH: master
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+    - name: 工作流完毕
+      uses: actions/checkout@main
 
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt install git python python2.7 build-essential device-tree-compiler -y
-
-      - name: Clone U-Boot Source
-        run: |
-          git clone https://github.com/wuxiuxiu521/AX1800Pro-Uboot
-          cd uboot-ipq60xx
-          git checkout master  # 替换为需要的分支
-
-      - name: Build U-Boot
-        run: |
-          cd uboot-ipq60xx-build/
-          ./build.sh
-
-      - name: Show Build Output
-        run: |
-          echo "The U-Boot binary will be located at: uboot-ipq60xx-build/u-boot.mbn"
-          echo "U-Boot failsafe HTTP server IP: 192.168.1.1"
+    - name: 初始化环境
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        set +e
+        docker rmi `docker images -q`
+        sudo rm -rf \
+          /usr/share/dotnet \
+          /etc/mysql \
+          /etc/php
+        sudo -E apt-get -y purge \
+          azure-cli \
+          ghc* \
+          zulu* \
+          hhvm \
+          llvm* \
+          firefox \
+          google* \
+          dotnet* \
+          powershell \
+          openjdk* \
+          mysql* \
+          php*
+        sudo -E apt-get update
+        sudo -E apt-get -y install gcc-aarch64-linux-gnu build-essential flex bison libssl-dev git python build-essential device-tree-compiler
+        sudo -E apt-get -y autoremove --purge
+        sudo -E apt-get clean
+    - name: 下载源码和分支
+      env: 
+        REPO_URL: https://github.com/wuxiuxiu521/AX1800Pro-Uboot
+        REPO_BRANCH: master
+      run: |
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        cd openwrt
+  
+    - name: 编译UBoot
+      working-directory: ./openwrt
+      run: |
+        ./build.sh
+        echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        
+    - name : 打包固件
+      uses: actions/upload-artifact@main
+      with:
+        name: Rax3000m_nand_uboot${{ env.FILE_DATE }}
+        path: openwrt/output/
