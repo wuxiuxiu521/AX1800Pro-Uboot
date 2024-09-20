@@ -1,5 +1,3 @@
-
-
 name: Build AX1800Pro-Uboot
 
 on: 
@@ -8,12 +6,6 @@ on:
   push:
     tags:
     - 'v*'
-  #  branches: 
-  #    - master
-#  schedule:
-#    - cron: 0 8 * * 5
-  watch:
-    types: [started]
 env:
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
@@ -27,7 +19,8 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@master
+      uses: actions/checkout@v2
+
     - name: Initialization environment
       env:
         DEBIAN_FRONTEND: noninteractive
@@ -36,39 +29,36 @@ jobs:
         sudo apt-get -y install unzip libtool-bin curl cmake gperf gawk flex bison nano xxd fakeroot \
         cpio git python-docutils gettext automake autopoint texinfo build-essential help2man \
         pkg-config zlib1g-dev libgmp3-dev libmpc-dev libmpfr-dev libncurses5-dev libltdl-dev wget python2.7 libssl-dev device-tree-compiler
+
     - name: Clone source code
-      
       run: |
-        
-        git clone --depth=1 https://github.com/jifei881121/AX1800Pro-Uboot /opt/uboot
-        
+        git clone --depth=1 https://github.com/你的用户名/你的仓库 /opt/uboot
+
     - name: Build Firmware
-            
       run: |
         cd /opt/uboot
         chmod +x ./env.sh
         chmod +x ./build.sh
         sudo ./env.sh
         sudo ./build.sh
-        
+
     - name: Generate release tag
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
-        [ ${UPLOAD_GOFILE} = true && ${{ steps.gofile.outputs.url }} ] && echo "🔗 [GoFile](${{ steps.gofile.outputs.url }})" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
-      uses: softprops/action-gh-release@master
+      uses: softprops/action-gh-release@v1
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        files: ${{ env.FIRMWARE }}/opt/uboot/*.mbn
+        files: /opt/uboot/*.mbn  # 修改为生成的固件文件路径
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
@@ -77,10 +67,10 @@ jobs:
         keep_minimum_runs: 2
 
     - name: Remove old Releases
-      uses: dev-drprasad/delete-older-releases@master
+      uses: dev-drprasad/delete-older-releases@v1
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
-        keep_latest: 3
+        keep_latest: 999  # 修改为你希望保留的发布数量
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
