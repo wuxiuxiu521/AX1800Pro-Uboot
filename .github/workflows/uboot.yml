@@ -38,7 +38,7 @@ jobs:
     - name: 设置 Release 标签和名称
       id: set_tag_name
       run: |
-        TAG_NAME=$(date +"%Y.%m.%d|%H:%M")
+        TAG_NAME=$(date +"%Y.%m.%d-%H:%M")
         echo "tag_name=$TAG_NAME" >> $GITHUB_ENV
         echo "release_name=AX1800Pro-Uboot $TAG_NAME" >> $GITHUB_ENV
 
