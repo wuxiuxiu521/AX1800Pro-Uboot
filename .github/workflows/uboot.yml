@@ -36,10 +36,10 @@ jobs:
         ./build.sh
 
     - name: 打包固件
-      uses: actions/upload-artifact@main
+      # uses: actions/upload-artifact@main
       with:
-        name: AX1800Pro-Uboot
-        path: ./u-boot.*
+        # name: AX1800Pro-Uboot
+        # path: ./u-boot.*
         run: |
           echo "构建结束"
           echo "查看当前目录内容"
