@@ -11,17 +11,18 @@ on:
 
 jobs:
   build:
-    # 使用 Ubuntu 18.04
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
     steps:
-    - name: 检出代码
+    - name: 工作流完毕
       uses: actions/checkout@main
 
     - name: 初始化环境
       run: |
         sudo apt-get update
-        sudo apt-get install -y git python build-essential device-tree-compiler
+        sudo apt-get install -y git python2.7 build-essential device-tree-compiler
+        # 创建 Python 的别名为 python
+        sudo ln -sf /usr/bin/python2.7 /usr/bin/python
         python --version
 
     - name: 下载源码并切换到正确分支
