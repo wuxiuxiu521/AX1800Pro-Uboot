@@ -46,8 +46,11 @@ jobs:
         #   echo "未找到 u-boot.mbn 文件"
         # fi
 
-    - name : 打包固件
+    - name: 打包固件
       uses: actions/upload-artifact@main
       with:
         name: AX1800Pro-Uboot
-        path: ./u-boot.bin, ./u-boot.mbn
+        path: ./u-boot.*
+        run: |
+          echo "查看当前目录内容"
+          ls -al
