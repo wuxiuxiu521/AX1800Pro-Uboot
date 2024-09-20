@@ -1,11 +1,6 @@
-#=================================================
-# Description: Build UBoot for AX1800Pro
-# Lisence: MIT
-#=================================================
-
 name: 编译 AX1800Pro-Uboot
 
-on: 
+on:
   repository_dispatch:
   workflow_dispatch:
 
@@ -14,14 +9,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: 工作流完毕
-      uses: actions/checkout@main
+    - name: 检出代码
+      uses: actions/checkout@v2
 
     - name: 初始化环境
       run: |
         sudo apt-get update
         sudo apt-get install -y git python2.7 build-essential device-tree-compiler
-        # 创建 Python 的别名为 python
         sudo ln -sf /usr/bin/python2.7 /usr/bin/python
         python --version
 
@@ -35,17 +29,40 @@ jobs:
       run: |
         ./build.sh
 
-    - name: 打包固件
-      uses: actions/upload-artifact@main
+    - name: 查看编译目录内容
+      working-directory: ./uboot
+      run: |
+        find . -name "u-boot.*"
+
+    # 1. 创建 Release（如果已有 Release，可以省略此步骤）
+    - name: 创建 Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: AX1800Pro-Uboot
-        path: |
-         ./uboot/u-boot.bin
-         ./uboot/u-boot.mbn
-      # run: |
-      #   echo "构建结束"
-      #   echo "查看当前目录内容"
-      #   # ls -al
-      #   # tree
-      #   find -name u-boot.bin
-      #   echo "查看构建目录内容"
+        tag_name: "v1.0.0"      # 修改成你希望的版本号
+        release_name: "AX1800Pro-Uboot v1.0.0"
+        draft: false             # 如果你希望手动发布，将其改为 true
+        prerelease: false
+
+    # 2. 上传编译好的文件到 Release
+    - name: 上传固件到 Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./uboot/u-boot.bin
+        asset_name: u-boot.bin
+        asset_content_type: application/octet-stream
+
+    - name: 上传 MBN 文件到 Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./uboot/u-boot.mbn
+        asset_name: u-boot.mbn
+        asset_content_type: application/octet-stream
