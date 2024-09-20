@@ -50,4 +50,4 @@ jobs:
       uses: actions/upload-artifact@main
       with:
         name: AX1800Pro-Uboot
-        path: u-boot.bin, u-boot.mbn
+        path: ./u-boot.bin, ./u-boot.mbn
