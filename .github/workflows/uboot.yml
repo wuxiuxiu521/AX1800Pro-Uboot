@@ -44,5 +44,6 @@ jobs:
         echo "构建结束"
         echo "查看当前目录内容"
         # ls -al
-        tree
+        # tree
+        find -name u-boot.bin
         echo "查看构建目录内容"
