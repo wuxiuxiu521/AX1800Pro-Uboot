@@ -47,7 +47,7 @@ jobs:
         # fi
 
     - name : 打包固件
-      uses: actions/upload-artifact@main
+      uses: actions/upload-artifact@v2
       with:
         name: AX1800Pro-Uboot
-        path: u-boot.bin, u-boot.mbn  # 上传生成的两个文件
+        path: ./uboot/u-boot.bin, ./uboot/u-boot.mbn
