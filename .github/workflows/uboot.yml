@@ -3,7 +3,7 @@
 # Lisence: MIT
 #=================================================
 
-name: 编译 AX1800Pro_UBoot
+name: 编译 AX1800Pro-Uboot
 
 # 以下开关，触发工作流
 on: 
@@ -42,25 +42,34 @@ jobs:
           mysql* \
           php*
         sudo -E apt-get update
-        sudo -E apt-get -y install gcc-aarch64-linux-gnu build-essential flex bison libssl-dev git python build-essential device-tree-compiler
+        sudo -E apt-get -y install git python build-essential device-tree-compiler
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
+
     - name: 下载源码和分支
       env: 
         REPO_URL: https://github.com/wuxiuxiu521/AX1800Pro-Uboot
         REPO_BRANCH: master
       run: |
-        git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
-        cd openwrt
-  
-    - name: 编译UBoot
-      working-directory: ./openwrt
+        git clone --depth 1 $REPO_URL -b $REPO_BRANCH uboot
+        cd uboot
+
+    - name: 安装 Python 2.7 并切换
       run: |
+        sudo apt-get install python2.7 -y
+        sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+        python --version
+
+    - name: 编译 UBoot
+      working-directory: ./uboot
+      run: |
+        git clone https://github.com/lgs2007m/uboot-ipq60xx-build
+        cd uboot-ipq60xx-build/
         ./build.sh
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-        
+
     - name : 打包固件
       uses: actions/upload-artifact@main
       with:
-        name: Rax3000m_nand_uboot${{ env.FILE_DATE }}
-        path: openwrt/output/
+        name: AX1800Pro-Uboot${{ env.FILE_DATE }}
+        path: uboot-ipq60xx-build/u-boot.mbn
