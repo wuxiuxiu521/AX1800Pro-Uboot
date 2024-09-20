@@ -5,7 +5,6 @@
 
 name: 编译 AX1800Pro-Uboot
 
-# 以下开关，触发工作流
 on: 
   repository_dispatch:
   workflow_dispatch:
@@ -46,12 +45,9 @@ jobs:
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
 
-    - name: 下载源码和分支
-      env: 
-        REPO_URL: https://github.com/wuxiuxiu521/AX1800Pro-Uboot
-        REPO_BRANCH: main
+    - name: 下载源码并切换到正确分支
       run: |
-        git clone --depth 1 $REPO_URL -b $REPO_BRANCH uboot
+        git clone --depth 1 https://github.com/wuxiuxiu521/AX1800Pro-Uboot -b main uboot
         cd uboot
 
     - name: 安装 Python 2.7 并切换
@@ -66,8 +62,18 @@ jobs:
         ./build.sh
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
+    - name: 检查文件是否存在
+      working-directory: ./uboot
+      run: |
+        if [ -f output/u-boot.mbn ]; then
+          echo "文件 u-boot.mbn 已生成"
+        else
+          echo "未找到 u-boot.mbn 文件"
+          ls -al output/
+        fi
+
     - name : 打包固件
       uses: actions/upload-artifact@main
       with:
         name: AX1800Pro-Uboot${{ env.FILE_DATE }}
-        path: uboot/output/u-boot.mbn
+        path: uboot/output/u-boot.mbn  # 修改为实际生成文件的路径
