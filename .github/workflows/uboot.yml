@@ -35,9 +35,9 @@ jobs:
       run: |
         ./build.sh
         echo "构建结束"
-        # echo "查看当前目录内容"
-        # ls -al
-        # echo "查看构建目录内容"
+        echo "查看当前目录内容"
+        ls -al
+        echo "查看构建目录内容"
         # ls -al uboot-ipq60xx-build/
         # echo "检查 u-boot.mbn 文件是否存在"
         # if [ -f uboot-ipq60xx-build/u-boot.mbn ]; then
