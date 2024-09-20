@@ -11,18 +11,16 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
-    - name: 工作流完毕
+    - name: 检出代码
       uses: actions/checkout@main
 
     - name: 初始化环境
       run: |
         sudo apt-get update
-        sudo apt-get install -y git python2.7 build-essential device-tree-compiler
-        # 创建 Python 的别名为 python
-        sudo ln -sf /usr/bin/python2.7 /usr/bin/python
+        sudo apt-get install -y git python build-essential device-tree-compiler
         python --version
 
     - name: 下载源码并切换到正确分支
@@ -37,17 +35,9 @@ jobs:
         echo "构建结束"
         echo "查看当前目录内容"
         ls -al
-        echo "查看构建目录内容"
-        ls -al uboot-ipq60xx-build/
-        echo "检查 u-boot.mbn 文件是否存在"
-        if [ -f uboot-ipq60xx-build/u-boot.mbn ]; then
-          echo "文件 u-boot.mbn 已生成"
-        else
-          echo "未找到 u-boot.mbn 文件"
-        fi
 
     - name : 打包固件
       uses: actions/upload-artifact@main
       with:
         name: AX1800Pro-Uboot
-        path: uboot-ipq60xx-build/u-boot.mbn  # 根据实际生成路径调整
+        path: u-boot.bin, u-boot.mbn  # 上传生成的两个文件
