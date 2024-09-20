@@ -63,8 +63,6 @@ jobs:
     - name: 编译 UBoot
       working-directory: ./uboot
       run: |
-        git clone https://github.com/lgs2007m/uboot-ipq60xx-build
-        cd uboot-ipq60xx-build/
         ./build.sh
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
@@ -72,4 +70,4 @@ jobs:
       uses: actions/upload-artifact@main
       with:
         name: AX1800Pro-Uboot${{ env.FILE_DATE }}
-        path: uboot-ipq60xx-build/u-boot.mbn
+        path: uboot/output/u-boot.mbn
