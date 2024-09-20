@@ -20,12 +20,9 @@ jobs:
     - name: 初始化环境
       run: |
         sudo apt-get update
-        sudo apt-get install -y git python build-essential device-tree-compiler
-
-    - name: 安装 Python 2.7 并切换
-      run: |
-        sudo apt-get install python2.7 -y
-        sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+        sudo apt-get install -y git python2.7 build-essential device-tree-compiler
+        # 创建 Python 的别名为 python
+        sudo ln -sf /usr/bin/python2.7 /usr/bin/python
         python --version
 
     - name: 下载源码并切换到正确分支
